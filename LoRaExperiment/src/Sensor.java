@@ -1,6 +1,6 @@
 public class Sensor {
 	Location loc;
-	double dr;
+	double dr; //data rate
 	double p; //if power is negative, it means that we are not considering it
 	
 	public Sensor() {
