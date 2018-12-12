@@ -3,13 +3,24 @@ public class LoRa {
 	double bw; //bandwidth
 	double cr; //coding rate
 	double sf; //spreading factor
+	Location loc;
+	int cap;
+	int id; //number starting with 2
 	
 	public LoRa() {
 	}
-	public LoRa(double bw, double cr, double sf) {
+	public LoRa(int id, Location location, int cap, double bw, double cr, double sf) {
 		this.bw = bw;
 		this.cr = cr;
 		this.sf = sf;
+		this.id = id;
+		loc = location;
+	}
+	public void setID (int id) {
+		this.id = id;
+	}
+	public void setLoc(Location loc) {
+		this.loc = loc;
 	}
 	public void setBW(double bw) {
 		this.bw=bw;
@@ -20,13 +31,19 @@ public class LoRa {
 	public void setSF(double sf) {
 		this.sf=sf;
 	}
-	public double getBW(double bw) {
+	public int getID() {
+		return this.id;
+	}
+	public Location getLoc() {
+		return this.loc;
+	}
+	public double getBW() {
 		return this.bw;
 	}
-	public double getCR(double cr) {
+	public double getCR() {
 		return this.cr;
 	}
-	public double getSF(double sf) {
+	public double getSF() {
 		return this.sf;
 	}
 	public double getTR() {

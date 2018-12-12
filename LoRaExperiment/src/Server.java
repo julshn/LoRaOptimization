@@ -3,14 +3,19 @@ public class Server {
 	Location loc;//location
 	double cap; //capacity data/time
 	double p; //power
+	int id; //number starting with 3
 	
 	public Server() {
 	}
 	
-	public Server(Location loc, double cap, double p) {
+	public Server(int id, Location loc, double cap, double p) {
+		this.id = id;
 		this.loc = loc;
 		this.cap=cap;
 		this.p=p;
+	}
+	public void setID(int id) {
+		this.id = id;
 	}
 	public void setLoc(Location loc) {
 		this.loc = loc;
@@ -20,6 +25,9 @@ public class Server {
 	}
 	public void setPow(double p) {
 		this.p=p;
+	}
+	public int getID() {
+		return this.id;
 	}
 	public Location getLoc() {
 		return this.loc;
