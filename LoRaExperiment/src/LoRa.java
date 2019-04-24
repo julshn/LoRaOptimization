@@ -1,7 +1,7 @@
 
 public class LoRa {
 	double bw; //bandwidth
-	double cr; //coding rate
+	double cr; //coding rate (same as data rate)
 	double sf; //spreading factor
 	Location loc;
 	int cap;
