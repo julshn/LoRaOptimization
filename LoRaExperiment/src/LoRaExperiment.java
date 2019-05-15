@@ -25,6 +25,7 @@ public class LoRaExperiment {
 	  
 	  private double[] probabilitiesSR;
 	  private double[] probabilitiesRS;
+	  private double[] probabilities;
 	  
 	  private Random rng = new Random();
 	  private ArrayList<Communication> bestCommunication;
@@ -107,8 +108,6 @@ public class LoRaExperiment {
 	        }
 	  }
 	 
-	  public void setUpData(){
-	  }
 	  public void setUpSensors(int num){
 		  int id = 1000;
 		  for (int i = 0; i < num; i++) {
@@ -140,12 +139,10 @@ public class LoRaExperiment {
 			}
 	  }
 	  public ArrayList<Communication> solve() {
-		  setUpData(); 
 	        clearCommunications();
 	        for(int i=0;i<maxIter;i++)
 	        {
 	            sendData();
-	            updateCommunications();
 	            updateBest();
 	        }
 	        /*s+=("\nBest tour length: " + (bestTourLength - numberOfCities));
@@ -154,10 +151,21 @@ public class LoRaExperiment {
 	  }
 
 	  public void sendData() {
-	  //like moveAnts
-	  /*for(Data d: data) {
-	      //data sent to a radio, then to a server
-	  }*/
+		  for(int i = 0; i < sensors.size(); i++) {
+			  int indR = selectNextRadio(i);
+			  LoRa r = radios.get(indR);
+			  r.addCommunication();
+			while (r.numComm > r.cap){
+				  //find second largest probability
+				
+			}
+			int indS= selectNextServer(i);
+			Server s = servers.get(indS);
+			s.addCommunication();
+			while (s.numComm > s.cap){
+				//find second largest probability
+			}
+		  }
 	  }
 
 	  public int selectNextRadio(int ind) {
@@ -205,8 +213,21 @@ public class LoRaExperiment {
 	  public void updateCommunications(){
 	  }
 	  public void updateBest(){
+		  double max = probabilitiesRS[0] * probabilitiesSR[0];
+		  for (int i = 0; i < probabilitiesSR.length; i++) {
+			  for (int j = 0; j < probabilitiesRS.length;j++) {
+				  if(probabilitiesSR[i] * probabilitiesRS[j] > max) {
+					  max = probabilitiesSR[i] * probabilitiesRS[j];
+					  //bestCommunication = new Communication(sensors[])
+				  }
+				  
+			  }
+		  }
 	  }
 	  public void clearCommunications(){
+		  for (int i = 0; i < communications.size(); i++) {
+			  communications.set(i, null);
+		  }
 	  }
   
 	

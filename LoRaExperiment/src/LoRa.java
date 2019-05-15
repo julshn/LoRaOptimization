@@ -6,7 +6,7 @@ public class LoRa {
 	Location loc;
 	int cap;
 	int id; //number starting with 2
-	
+	int numComm; //number of communications going through the radio
 	public LoRa() {
 	}
 	public LoRa(int id, Location location, int cap, double bw, double cr, double sf) {
@@ -15,6 +15,7 @@ public class LoRa {
 		this.sf = sf;
 		this.id = id;
 		loc = location;
+		numComm = 0;
 	}
 	public void setID (int id) {
 		this.id = id;
@@ -49,5 +50,8 @@ public class LoRa {
 	public double getTR() {
 		double tr=Math.pow(2, sf) / bw;
 		return tr;
+	}
+	public void addCommunication() {
+		numComm++;
 	}
 }

@@ -4,7 +4,7 @@ public class Server {
 	double cap; //capacity data/time
 	double p; //power
 	int id; //number starting with 3
-	
+	int numComm;
 	public Server() {
 	}
 	
@@ -13,6 +13,7 @@ public class Server {
 		this.loc = loc;
 		this.cap=cap;
 		this.p=p;
+		numComm = 0;
 	}
 	public void setID(int id) {
 		this.id = id;
@@ -37,5 +38,8 @@ public class Server {
 	}
 	public double getPow() {
 		return this.p;
+	}
+	public void addCommunication() {
+		numComm++;
 	}
 }
