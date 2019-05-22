@@ -23,8 +23,8 @@ public class LoRaExperiment {
 	  private double[][] costSR;
 	  private double[][] costRS;
 	  
-	  private double[] probabilitiesSR;
-	  private double[] probabilitiesRS;
+	  private double[][] probabilitiesSR;
+	  private double[][] probabilitiesRS;
 	  private double[] probabilities;
 	  
 	  private Random rng = new Random();
@@ -45,8 +45,8 @@ public class LoRaExperiment {
 			numRS = new double [numberOfRadios][numberOfServers];
 			costSR = new double[numberOfSensors][numberOfRadios]; 
 			costRS = new double [numberOfRadios][numberOfServers];
-			probabilitiesSR = new double[numberOfRadios]; 
-			probabilitiesRS = new double[numberOfServers];
+			probabilitiesSR = new double[numberOfSensors][numberOfRadios]; 
+			probabilitiesRS = new double[numberOfRadios][numberOfServers];
 		}
 	  public LoRaExperiment(ArrayList<Sensor> sensors,  ArrayList<LoRa> radios, ArrayList<Server> servers, double kb, double df, int iter) {
 			this.sensors = (ArrayList<Sensor>) sensors.clone();
@@ -61,8 +61,8 @@ public class LoRaExperiment {
 			numRS = new double [numberOfRadios][numberOfServers];
 			costSR = new double[numberOfSensors][numberOfRadios]; 
 			costRS = new double [numberOfRadios][numberOfServers];
-			probabilitiesSR = new double[numberOfRadios]; 
-			probabilitiesRS = new double[numberOfServers];
+			probabilitiesSR = new double[numberOfSensors][numberOfRadios]; 
+			probabilitiesRS = new double[numberOfRadios][numberOfServers];
 	  }
 	  /*public double[][] generateRandomMatrix(int m, int n) { 
 		  double[][] randomMatrix = new double[m][n];
@@ -140,41 +140,47 @@ public class LoRaExperiment {
 	  }
 	  public ArrayList<Communication> solve() {
 	        clearCommunications();
-	        for(int i=0;i<maxIter;i++)
+	        for(int i=0;i<numberOfSensors;i++)
 	        {
-	            sendData();
-	            updateBest();
+	            sendData(i);
+	            updateBest(i);
 	        }
 	        /*s+=("\nBest tour length: " + (bestTourLength - numberOfCities));
 	        s+=("\nBest tour order: " + Arrays.toString(bestTourOrder));*/
 	        return (ArrayList<Communication>) bestCommunication.clone();
 	  }
 
-	  public void sendData() {
-		  for(int i = 0; i < sensors.size(); i++) {
+	  public void sendData(int i) {
+		  double data = amountOfData;
+		  	while(data > 0) {
 			  int indR = selectNextRadio(i);
 			  LoRa r = radios.get(indR);
-			  r.addCommunication();
-			while (r.numComm > r.cap){
+			  while (r.numComm > r.cap){
 				  //find second largest probability
 				
-			}
-			int indS= selectNextServer(i);
-			Server s = servers.get(indS);
-			s.addCommunication();
-			while (s.numComm > s.cap){
+			  }
+			  int indS= selectNextServer(i);
+			  Server s = servers.get(indS);
+			  s.addCommunication();
+			  while (s.numComm > s.cap){
 				//find second largest probability
-			}
-		  }
+			  }
+			  if (amountOfData > Math.min(r.cap, s.cap)) {
+				 data -= Math.min(r.cap, s.cap);
+			  }
+			  else
+				  data = 0;
+			 // updateBest(new Communication);
+		  	} 
 	  }
 
 	  public int selectNextRadio(int ind) {
 		  calculateProbabilitiesR(ind);
 		  int maxInd = 0;
-		  double max = probabilitiesSR[0];
+		  double max = probabilitiesSR[ind][0];
 		  for (int i = 0; i < numberOfRadios;i++) {
-			  max = Math.max(probabilitiesSR[i], max);
-			  if (max == probabilitiesSR[i])
+			  max = Math.max(probabilitiesSR[ind][i], max);
+			  if (max == probabilitiesSR[ind][i])
 				  maxInd = i;
 		  }
 		  return maxInd;
@@ -182,10 +188,10 @@ public class LoRaExperiment {
 	  public int selectNextServer(int ind){
 		  calculateProbabilitiesS(ind);
 		  int maxInd = 0;
-		  double max = probabilitiesRS[0];
+		  double max = probabilitiesRS[ind][0];
 		  for (int i = 0; i < numberOfRadios;i++) {
-			  max = Math.max(probabilitiesRS[i], max);
-			  if (max == probabilitiesRS[i])
+			  max = Math.max(probabilitiesRS[ind][i], max);
+			  if (max == probabilitiesRS[ind][i])
 				  maxInd = i;
 		  }
 		  return maxInd;
@@ -196,8 +202,8 @@ public class LoRaExperiment {
 			sum+= Math.pow(numSR[ind][i], alpha) * Math.pow(1 / costSR[ind][i], beta);
 		  }
 		  for(int i = 0; i < numberOfRadios;i++) {
-			  probabilitiesSR[i] = Math.pow(numSR[ind][i], alpha) * Math.pow(1/ costSR[ind][i], beta);
-			  probabilitiesSR[i]/=sum;
+			  probabilitiesSR[ind][i] = Math.pow(numSR[ind][i], alpha) * Math.pow(1/ costSR[ind][i], beta);
+			  probabilitiesSR[ind][i]/=sum;
 		  }
 	  }
 	  public void calculateProbabilitiesS(int ind) {
@@ -206,18 +212,19 @@ public class LoRaExperiment {
 			sum+= Math.pow(numRS[ind][i], alpha) * Math.pow(1 / costRS[ind][i], beta);
 		  }
 		  for(int i = 0; i < numberOfServers;i++) {
-			  probabilitiesRS[i] = Math.pow(numRS[ind][i], alpha) * Math.pow(1/ costRS[ind][i], beta);
-			  probabilitiesRS[i]/=sum;
+			  probabilitiesRS[ind][i] = Math.pow(numRS[ind][i], alpha) * Math.pow(1/ costRS[ind][i], beta);
+			  probabilitiesRS[ind][i]/=sum;
 		  }		  
 	  }
 	  public void updateCommunications(){
+		  //make an array of all the communications that are happening (ie if some device's capacity runs out) 
 	  }
-	  public void updateBest(){
-		  double max = probabilitiesRS[0] * probabilitiesSR[0];
+	  public void updateBest(int ind){ //minimize cost
+		  double max = probabilitiesRS[0][0] * probabilitiesSR[0][0];
 		  for (int i = 0; i < probabilitiesSR.length; i++) {
 			  for (int j = 0; j < probabilitiesRS.length;j++) {
-				  if(probabilitiesSR[i] * probabilitiesRS[j] > max) {
-					  max = probabilitiesSR[i] * probabilitiesRS[j];
+				  if(probabilitiesSR[ind][i] * probabilitiesRS[ind][j] > max) {
+					  max = probabilitiesSR[ind][i] * probabilitiesRS[ind][j];
 					  //bestCommunication = new Communication(sensors[])
 				  }
 				  

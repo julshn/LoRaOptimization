@@ -5,6 +5,7 @@ public class Server {
 	double p; //power
 	int id; //number starting with 3
 	int numComm;
+	double data;
 	public Server() {
 	}
 	
@@ -41,5 +42,8 @@ public class Server {
 	}
 	public void addCommunication() {
 		numComm++;
+	}
+	public void adddata(double amount) {
+		data += amount;
 	}
 }

@@ -7,6 +7,7 @@ public class LoRa {
 	int cap;
 	int id; //number starting with 2
 	int numComm; //number of communications going through the radio
+	double data = 0; //amount of data going through the radio 
 	public LoRa() {
 	}
 	public LoRa(int id, Location location, int cap, double bw, double cr, double sf) {
@@ -53,5 +54,8 @@ public class LoRa {
 	}
 	public void addCommunication() {
 		numComm++;
+	}
+	public void addData(double amount) {
+		data += amount;
 	}
 }
